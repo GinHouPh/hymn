@@ -1,0 +1,184 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  username      String   @unique
+  firstName     String?
+  lastName      String?
+  passwordHash  String
+  role          UserRole @default(USER)
+  isVerified    Boolean  @default(false)
+  verificationToken String?
+  resetPasswordToken String?
+  resetPasswordExpires DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  notes         UserNote[]
+  favorites     SongFavorite[]
+  playlists     Playlist[]
+  preferences   UserPreferences?
+  viewHistory   ViewHistory[]
+
+  @@map("users")
+}
+
+model Song {
+  id          String   @id @default(cuid())
+  title       String
+  number      Int?     // Hymn number if applicable
+  lyrics      String
+  composer    String?
+  author      String?
+  category    String?
+  tags        String[]
+  language    String   @default("en")
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  mediaFiles    MediaFile[]
+  notes         UserNote[]
+  favorites     SongFavorite[]
+  playlistSongs PlaylistSong[]
+  viewHistory   ViewHistory[]
+
+  @@map("songs")
+}
+
+model MediaFile {
+  id        String    @id @default(cuid())
+  songId    String
+  type      MediaType
+  filename  String
+  originalName String
+  mimeType  String
+  size      Int
+  url       String
+  s3Key     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Relations
+  song Song @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@map("media_files")
+}
+
+model UserNote {
+  id        String   @id @default(cuid())
+  userId    String
+  songId    String
+  content   String
+  position  Json?    // Store position data for note placement
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song Song @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@map("user_notes")
+}
+
+model SongFavorite {
+  id        String   @id @default(cuid())
+  userId    String
+  songId    String
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song Song @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, songId])
+  @@map("song_favorites")
+}
+
+model Playlist {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  playlistSongs PlaylistSong[]
+
+  @@map("playlists")
+}
+
+model PlaylistSong {
+  id         String   @id @default(cuid())
+  playlistId String
+  songId     String
+  order      Int
+  createdAt  DateTime @default(now())
+
+  // Relations
+  playlist Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  song     Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@unique([playlistId, songId])
+  @@map("playlist_songs")
+}
+
+model UserPreferences {
+  id           String @id @default(cuid())
+  userId       String @unique
+  theme        String @default("light")
+  fontSize     Int    @default(16)
+  language     String @default("en")
+  autoplay     Boolean @default(false)
+  notifications Boolean @default(true)
+  preferences  Json?  // Store additional preferences as JSON
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_preferences")
+}
+
+model ViewHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  songId    String
+  viewedAt  DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song Song @relation(fields: [songId], references: [id], onDelete: Cascade)
+
+  @@map("view_history")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  MODERATOR
+}
+
+enum MediaType {
+  AUDIO
+  IMAGE
+  VIDEO
+  NOTATION
+}

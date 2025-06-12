@@ -1,23 +1,32 @@
 {
-  "name": "hymn",
+  "name": "hymnal-app-monorepo",
   "version": "1.0.0",
-  "main": "index.ts",
+  "description": "Hymnal App Monorepo containing mobile app, admin portal, and backend",
+  "private": true,
+  "workspaces": [
+    "apps/mobile",
+    "apps/admin-portal",
+    "apps/backend"
+  ],
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web"
-  },
-  "dependencies": {
-    "expo": "~53.0.9",
-    "expo-status-bar": "~2.2.3",
-    "react": "19.0.0",
-    "react-native": "0.79.2"
+    "dev:mobile": "npm run start --workspace=apps/mobile",
+    "dev:admin": "npm run start --workspace=apps/admin-portal",
+    "dev:backend": "npm run dev --workspace=apps/backend",
+    "build:mobile": "npm run build --workspace=apps/mobile",
+    "build:admin": "npm run build --workspace=apps/admin-portal",
+    "build:backend": "npm run build --workspace=apps/backend",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.2",
-    "@types/react": "~19.0.10",
-    "typescript": "~5.8.3"
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0"
   },
-  "private": true
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
 }
