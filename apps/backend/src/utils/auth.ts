@@ -38,7 +38,7 @@ export const generateTokens = (payload: TokenPayload): TokenPair => {
     expiresIn: JWT_EXPIRES_IN,
     issuer: 'hymnal-app',
     audience: 'hymnal-app-users',
-  });
+  } as jwt.SignOptions);
 
   const refreshToken = jwt.sign(
     { userId: payload.userId },
@@ -47,7 +47,7 @@ export const generateTokens = (payload: TokenPayload): TokenPair => {
       expiresIn: JWT_REFRESH_EXPIRES_IN,
       issuer: 'hymnal-app',
       audience: 'hymnal-app-users',
-    }
+    } as jwt.SignOptions
   );
 
   return { accessToken, refreshToken };

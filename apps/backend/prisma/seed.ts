@@ -1,4 +1,4 @@
- import { PrismaClient, UserRole, MediaType } from '@prisma/client';
+import { PrismaClient, UserRole, MediaType } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -13,11 +13,12 @@ async function main() {
     update: {},
     create: {
       email: 'admin@hymnal.app',
-      password: adminPassword,
+      username: 'admin',
+      passwordHash: adminPassword,
       firstName: 'Admin',
       lastName: 'User',
       role: UserRole.ADMIN,
-      isEmailVerified: true,
+      isVerified: true,
     },
   });
   console.log('✅ Admin user created:', admin.email);
@@ -29,11 +30,12 @@ async function main() {
     update: {},
     create: {
       email: 'moderator@hymnal.app',
-      password: moderatorPassword,
+      username: 'moderator',
+      passwordHash: moderatorPassword,
       firstName: 'Moderator',
       lastName: 'User',
       role: UserRole.MODERATOR,
-      isEmailVerified: true,
+      isVerified: true,
     },
   });
   console.log('✅ Moderator user created:', moderator.email);
@@ -45,11 +47,12 @@ async function main() {
     update: {},
     create: {
       email: 'user@hymnal.app',
-      password: userPassword,
+      username: 'user',
+      passwordHash: userPassword,
       firstName: 'Regular',
       lastName: 'User',
       role: UserRole.USER,
-      isEmailVerified: true,
+      isVerified: true,
     },
   });
   console.log('✅ Regular user created:', user.email);
@@ -80,13 +83,8 @@ As long as life endures.`,
       composer: 'John Newton',
       category: 'Traditional',
       tags: ['grace', 'salvation', 'traditional'],
-      key: 'G',
-      timeSignature: '3/4',
-      tempo: 'Andante',
-      difficulty: 'Easy',
-      language: 'English',
-      yearWritten: 1772,
-      description: 'A beloved hymn about God\'s grace and redemption.',
+      language: 'en',
+      isPublished: true,
     },
     {
       title: 'How Great Thou Art',
@@ -112,13 +110,8 @@ He bled and died to take away my sin.`,
       composer: 'Carl Boberg',
       category: 'Worship',
       tags: ['worship', 'nature', 'praise'],
-      key: 'Bb',
-      timeSignature: '4/4',
-      tempo: 'Moderato',
-      difficulty: 'Medium',
-      language: 'English',
-      yearWritten: 1885,
-      description: 'A powerful hymn of praise celebrating God\'s greatness.',
+      language: 'en',
+      isPublished: true,
     },
     {
       title: 'Be Thou My Vision',
@@ -144,13 +137,8 @@ Still be my vision, O Ruler of all.`,
       composer: 'Traditional Irish',
       category: 'Celtic',
       tags: ['vision', 'devotion', 'celtic'],
-      key: 'D',
-      timeSignature: '3/4',
-      tempo: 'Andante',
-      difficulty: 'Medium',
-      language: 'English',
-      yearWritten: 800,
-      description: 'An ancient Irish hymn expressing devotion to God.',
+      language: 'en',
+      isPublished: true,
     },
     {
       title: 'Holy, Holy, Holy',
@@ -238,11 +226,9 @@ Even so, it is well with my soul.`,
       userId: user.id,
       theme: 'light',
       fontSize: 16,
-      autoPlay: false,
-      showChords: true,
-      showLyrics: true,
-      defaultKey: 'C',
-      language: 'English',
+      autoplay: false,
+      notifications: true,
+      language: 'en',
     },
   });
   console.log('✅ User preferences created');
